@@ -61,29 +61,47 @@ class ChangeTextBehaviorKtTest {
      * [androidx.test.rule.ActivityTestRule].
      */
     @get:Rule var activityScenarioRule = activityScenarioRule<MainActivity>()
-    val STRING_TO_BE_TYPED = "I like mobile testing"
 
+    // სატესტო მონაცემები: საყვარელი საჭმელი და ორი ფილმი
+    val FAVORITE_FOOD = "Khinkali"
+    val FIRST_MOVIE = "Star Wars"
+    val SECOND_MOVIE = "Lock, Stock and Two Smoking Barrels"
+
+    // ტესტი 1: საჭმლის სახელი ჩნდება იმავე ეკრანზე, ველის ზემოთ
     @Test
-    fun changeText_sameActivity() {
-
-        // Type text and then press the button.
+    fun enteredFavoriteFood_isShownAboveInputField_afterChangeTextClick() {
+        // 1-2. საჭმლის სახელის ჩაწერა და კლავიატურის დახურვა
         onView(withId(R.id.editTextUserInput))
-                .perform(typeText(STRING_TO_BE_TYPED), closeSoftKeyboard())
+                .perform(typeText(FAVORITE_FOOD), closeSoftKeyboard())
+
+        // 3. 'Change text' ღილაკზე დაჭერა
         onView(withId(R.id.changeTextBt)).perform(click())
 
-
-        // Check that the text was changed.
-        onView(withId(R.id.textToBeChanged)).check(matches(withText(STRING_TO_BE_TYPED)))
+        // 4. ველის ზემოთ ტექსტი = ჩაწერილი საჭმელი
+        onView(withId(R.id.textToBeChanged)).check(matches(withText(FAVORITE_FOOD)))
     }
 
+    // ტესტი 2: პირველი ფილმი ჩნდება იმავე ეკრანზე, მეორე ფილმი - ახალ ეკრანზე
     @Test
-    fun changeText_newActivity() {
-        // Type text and then press the button.
-        onView(withId(R.id.editTextUserInput)).perform(typeText(STRING_TO_BE_TYPED),
-                closeSoftKeyboard())
+    fun enteredMovies_areShownOnSameScreenAndOnNewActivity() {
+        // 1-2. პირველი ფილმის ჩაწერა და კლავიატურის დახურვა
+        onView(withId(R.id.editTextUserInput))
+                .perform(typeText(FIRST_MOVIE), closeSoftKeyboard())
+
+        // 3. 'Change text' ღილაკზე დაჭერა
+        onView(withId(R.id.changeTextBt)).perform(click())
+
+        // 4. ველის ზემოთ ტექსტი = პირველი ფილმი
+        onView(withId(R.id.textToBeChanged)).check(matches(withText(FIRST_MOVIE)))
+
+        // 5-7. ველის გასუფთავება, მეორე ფილმის ჩაწერა და კლავიატურის დახურვა
+        onView(withId(R.id.editTextUserInput))
+                .perform(clearText(), typeText(SECOND_MOVIE), closeSoftKeyboard())
+
+        // 8. 'Open activity and change text' ღილაკზე დაჭერა
         onView(withId(R.id.activityChangeTextBtn)).perform(click())
 
-        // This view is in a different Activity, no need to tell Espresso.
-        onView(withId(R.id.show_text_view)).check(matches(withText(STRING_TO_BE_TYPED)))
+        // 9. ახალ ეკრანზე ტექსტი = მეორე ფილმი
+        onView(withId(R.id.show_text_view)).check(matches(withText(SECOND_MOVIE)))
     }
 }
